@@ -1,28 +1,44 @@
 module.exports = function check(str, bracketsConfig) {
-  
-  // взять каждый элемент из конфига и пройтись по строчке со счетом количества этих скобочек
-  let startBracketAmount = 0;
-  let endBracketAmount = 0;
 
-  for (let i=0; i<bracketsConfig.length; i++) {
-    for (let j=0; j<2; j++) {
-      if (j===0) {
-        startBracketAmount = str.split(bracketsConfig[i][j]).length-1
-      }
-      if (j===1) {
-        endBracketAmount = str.split(bracketsConfig[i][j]).length-1
+  open_brackets = [];
+  close_brackets = [];
+  stack = [];
+  counterStick = 0;
+
+  for (let i = 0; i < bracketsConfig.length; i++) {
+    if (bracketsConfig[i][0] != '|' && bracketsConfig[i][1] != '|') {
+      open_brackets.push(bracketsConfig[i][0]);
+      close_brackets.push(bracketsConfig[i][1]);
+    }
+  }
+
+  usualBrackets = false;
+
+  for (let i = 0; i < str.length; i++) {
+
+    if (str[i] != '|') {
+      if (open_brackets.indexOf(str[i]) != -1) {
+        stack.push(str[i]);
+      } else {
+        index = close_brackets.indexOf(str[i]);
+        if ((stack.length > 0) && (stack[stack.length - 1] === open_brackets[index])) {
+          stack.pop()
+        } else {
+          return false;
+        }
+
       }
     }
-    if (startBracketAmount>0 && endBracketAmount>0) {
-      if (startBracketAmount === endBracketAmount) {
-        return true;
-      }
-      else {
-        return false;
-      }
-    }
+    
     else {
-      return false;
+    	counterStick++;
     }
+  }
+
+  if (stack.length === 0 && counterStick%2 === 0) {
+    return true;
+  }
+  else {
+  return false;
   }
 }
